@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+  <title>Document</title>
+</head>
+<body>
+
+  <form method="post" action="{{ route('uploadSponsors') }}" class="dropzone" id="dropzoneForm" enctype="multipart/form-data">
+{{     csrf_field() }}
+    <div class="dz-message" data-dz-message><span>Click or drag and drop images here</span></div>
+    <div class="fallback">
+        <input name="file" type="file" multiple />
+    </div>
+</form>
+
+
+<script>
+
+Dropzone.options.dropzoneForm = {
+   autoProcessQueue: false,
+   uploadMultiple: true,
+   parallelUploads:3,
+   maxFiles :3,
+   acceptedFiles: "image/*",
+   maxFilesize: 10,
+   init: function () {
+       this.on('completemultiple', function () {
+           console.log('done');
+           location.reload();
+       });
+  }
+}
+</script>
+  
+</body>
+</html>
