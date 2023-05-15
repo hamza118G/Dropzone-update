@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+    <title>Document</title>
+    
+</head>
+<style>
+    .image-item img{
+        width: 100px;
+        height: 100px;
+    }
+</style>
+<body>
+    
+
+    <form action="/target" id="my-dropzone" class="dropzone">
+        <img src="" alt="" id="myid">
+    <div class="detail-images-container"></div>
+        <div class="dz-preview dz-file-preview">
+          <div class="dz-image"><img data-dz-thumbnail /></div>
+          <div class="dz-details">
+            <div class="dz-filename"><span data-dz-name></span></div>
+            <div class="dz-size" data-dz-size></div>
+            <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+            <div class="dz-error-message"><span data-dz-errormessage></span></div>
+          </div>
+          <div class="dz-success-mark"><span></span></div>
+          <div class="dz-error-mark"><span></span></div>
+        </div>
+    
+    
+      </form>
+
+    <script>
+fetch("https://bdc6-81-19-209-53.ngrok-free.app/api/EcommerceProduct/GetProducts",{
+  headers: {
+        'Content-Type': 'application/json',
+        "ngrok-skip-browser-warning": "69420",
+      },
+})
+  .then(function (response) {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error("Network response was not ok.");
+    }
+  })
+  .then(function (data) {
+    // Get the detail image URLs from the data
+    const detailImageUrls = data[0].DetailImages.map(url => `https://bdc6-81-19-209-53.ngrok-free.app${url}`);
+
+    // Create a container element for the images
+    const container = document.createElement('div');
+    container.classList.add('image-container');
+
+    // Loop over each detail image URL and create a new image element and remove button for it
+    detailImageUrls.forEach(url => {
+      const imageContainer = document.createElement('div');
+      imageContainer.classList.add('image-item');
+
+      const image = new Image();
+      image.src = url;
+
+      const removeButton = document.createElement('button');
+      removeButton.innerText = 'Remove';
+      removeButton.addEventListener('click', function() {
+        imageContainer.remove();
+      });
+
+      imageContainer.appendChild(image);
+      imageContainer.appendChild(removeButton);
+      container.appendChild(imageContainer);
+    });
+
+    // Append the container to the HTML
+    document.querySelector('.detail-images-container').appendChild(container);
+  })
+  .catch(function (error) {
+    console.log("There was a problem with the fetch operation: " + error.message);
+  });
+
+
+    </script>
+</body>
+</html>

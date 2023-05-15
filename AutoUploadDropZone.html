@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+</head>
+<style>
+  .detail-images-container img{
+    width: 100px;
+    height: 100px;
+  }
+  .image-container{
+  
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: space-between;
+  }
+  button{
+    text-align: center;
+    align-items: center;
+  }
+</style>
+<body>
+
+
+
+
+<form action="/target" id="my-dropzone" class="dropzone">
+  <div class="detail-images-container" >
+    
+  </div>
+ 
+
+</form>
+
+
+
+
+
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
+
+  <script>
+
+fetch("https://bdc6-81-19-209-53.ngrok-free.app/api/EcommerceProduct/GetProducts",{
+        headers: {
+        'Content-Type': 'application/json',
+        "ngrok-skip-browser-warning": "69420",
+      },
+      })
+  .then(function (response) {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error("Network response was not ok.");
+    }
+  })
+  .then(function (data) {
+
+    const detailImageUrls = data[0].DetailImages.map(url => `https://bdc6-81-19-209-53.ngrok-free.app${url}`);
+    console.log("data", data)
+
+    console.log("URL", detailImageUrls)
+
+    const container = document.createElement('div');
+    container.classList.add('image-container');
+
+    detailImageUrls.forEach(url => {
+      const imageContainer = document.createElement('div');
+      imageContainer.classList.add('image-item');
+
+      const image = new Image();
+      image.src = url;
+
+
+      
+      const removeButton = document.createElement('button');
+      removeButton.innerText = 'Remove';
+      removeButton.addEventListener('click', function() {
+        imageContainer.remove();
+
+      });
+
+      imageContainer.appendChild(image);
+      imageContainer.appendChild(removeButton);
+      container.appendChild(imageContainer);
+    });
+    document.querySelector('.detail-images-container').appendChild(container);
+  })
+
+  </script>
+    
+
+</body>
+</html>
