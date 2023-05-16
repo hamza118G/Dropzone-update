@@ -28,12 +28,8 @@
 
 
 
-<form action="/target" id="my-dropzone" class="dropzone">
-  <div class="detail-images-container" >
-    
-  </div>
- 
-
+<form action="/target" id="my-dropzone" class="dropzone ">
+  <div class="detail-images-container"></div>
 </form>
 
 
@@ -45,7 +41,55 @@
 
   <script>
 
-fetch("https://bdc6-81-19-209-53.ngrok-free.app/api/EcommerceProduct/GetProducts",{
+
+
+
+
+    
+  //FOR FILE UPLOAD
+  var arr = new Array();
+
+
+  var zdrop = new Dropzone('#my-dropzone', {
+    url: '#',
+    maxFiles: 2,
+    maxFilesize: 30,
+    addRemoveLinks: true,
+    
+   
+    init: function() {
+      this.on("complete", function(file) {      
+      });
+      this.on("removedfile", function(file) {
+        console.log('File is Removed');
+
+arr = arr.filter(function(item) {
+    return item !== file.name
+})
+console.log(arr) 
+    }); 
+  }    
+  });
+    // Override the default 'upload' function to handle the file and convert it to a Base64 string
+    Dropzone.prototype.uploadFiles = function (files) {
+      const self = this;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const base64String = e.target.result
+            self.emit("success", file, { base64String: base64String });   
+        arr.push(file.name)
+        console.log('File Added:',arr) 
+          };
+        reader.readAsDataURL(file);
+      }
+    };
+
+
+
+
+fetch("https://9c5a-81-19-209-53.ngrok-free.app/api/EcommerceProduct/GetProducts",{
         headers: {
         'Content-Type': 'application/json',
         "ngrok-skip-browser-warning": "69420",
@@ -60,27 +104,37 @@ fetch("https://bdc6-81-19-209-53.ngrok-free.app/api/EcommerceProduct/GetProducts
   })
   .then(function (data) {
 
-    const detailImageUrls = data[0].DetailImages.map(url => `https://bdc6-81-19-209-53.ngrok-free.app${url}`);
+    const detailImageUrls = data[0].DetailImages.map(url => `https://9c5a-81-19-209-53.ngrok-free.app${url}`);
     console.log("data", data)
 
-    console.log("URL", detailImageUrls)
 
     const container = document.createElement('div');
     container.classList.add('image-container');
+
+   
 
     detailImageUrls.forEach(url => {
       const imageContainer = document.createElement('div');
       imageContainer.classList.add('image-item');
 
-      const image = new Image();
+      var image = new Image();
       image.src = url;
 
 
-      
+      arr.push(image.src)
+        console.log('File Added:',arr)
+
+
       const removeButton = document.createElement('button');
       removeButton.innerText = 'Remove';
       removeButton.addEventListener('click', function() {
         imageContainer.remove();
+
+
+        arr = arr.filter(function(item) {
+    return item !== image.src
+})
+console.log("Removed File",arr) 
 
       });
 
@@ -88,8 +142,13 @@ fetch("https://bdc6-81-19-209-53.ngrok-free.app/api/EcommerceProduct/GetProducts
       imageContainer.appendChild(removeButton);
       container.appendChild(imageContainer);
     });
+
     document.querySelector('.detail-images-container').appendChild(container);
+
   })
+
+
+
 
   </script>
     
